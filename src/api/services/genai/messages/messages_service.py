@@ -45,3 +45,30 @@ def set_messages_final_agent(state: AgentsState):
     messages.append(HumanMessage(content=state['user_message']))
  
     return {'messages': messages}
+
+def format_messages_for_client(state: AgentsState):
+
+    message_history = []
+    messages = state['messages']
+   
+    for message in messages:
+ 
+        if isinstance(message, SystemMessage):
+            continue
+       
+        if isinstance(message, AIMessage):
+            role = 'assistant'
+        elif isinstance(message, HumanMessage):
+            role = 'user'
+ 
+        message_history.append({
+            'role': role,
+            'content': message.content
+        })
+   
+    message_history.append({
+        'role': 'assistant',
+        'content': state['answer']
+    })
+ 
+    return {'message_history': message_history}

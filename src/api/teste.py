@@ -11,4 +11,4 @@ message_history = [
 ]
 user_message = 'quero saber sobre aquela atriz que protagonizou crepusculo, tipo, a vida dela e tals'
 
-genai_service.process(message_history, user_message)
+print(genai_service.process(message_history, user_message))

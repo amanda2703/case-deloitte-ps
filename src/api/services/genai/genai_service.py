@@ -1,3 +1,4 @@
+from api.services.genai.messages.messages_service import format_messages_for_client
 from api.services.genai.complementary.graph_elements import *
 from api.services.genai.agents.evaluating_agent import EvaluatingAgent
 from api.services.genai.agents.intent_agent import IntentAgent
@@ -27,10 +28,17 @@ class GenAIService(LogServiceMixin):
                 'user_message': user_message
             })
 
-            print(response)
+            return {
+                'answer': response['answer'],
+                'message_history': response['message_history']
+            }
         
         except Exception as e:
-            self.error_log(e)
+            error_message = f'Uma exceção do tipo {type(e)} ocorreu| Exceção: {e}'
+            self.error_log(error_message)
+            return {
+                'error_message': error_message
+            }
     
     def build_graph(self):
 
@@ -46,6 +54,7 @@ class GenAIService(LogServiceMixin):
         builder.add_node('define_deviated_answer', define_deviated_answer)
         builder.add_node('search_web', search_web)
         builder.add_node('search_wiki', search_wiki)
+        builder.add_node('format_messages_for_client', format_messages_for_client)
 
         builder.add_edge(START, 'intent_agent')
         builder.add_conditional_edges('intent_agent', evaluating_agent_necessary)
@@ -53,7 +62,8 @@ class GenAIService(LogServiceMixin):
         builder.add_conditional_edges('evaluating_agent', evaluating_search_necessary)
         builder.add_edge('search_web', 'final_agent')
         builder.add_edge('search_wiki', 'final_agent')
-        builder.add_edge('final_agent', END)
+        builder.add_edge('final_agent', 'format_messages_for_client')
+        builder.add_edge('format_messages_for_client', END)
 
         self.final_graph = builder.compile()
 
