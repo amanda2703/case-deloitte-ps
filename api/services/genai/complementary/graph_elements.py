@@ -1,7 +1,6 @@
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_community.document_loaders import WikipediaLoader
 from api.services.genai.agents.state import AgentsState
-from api.services.genai.agents.state import AgentsState
 
 # Aqui estão nós ou arestas condicionais que não estão declarados diretamente nos subgrafos 
 # dos agentes. Por isso, estão sendo chamados de elementos complementares. 

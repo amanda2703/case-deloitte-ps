@@ -72,3 +72,19 @@ def format_messages_for_client(state: AgentsState):
     })
  
     return {'message_history': message_history}
+
+def set_messages_guard(state: AgentsState):
+    
+    messages_guard = [
+        {
+            'role': 'user',
+            'content': [
+                {
+                    'type': 'text', 
+                    'text': state['user_message']
+                },
+            ],
+        }
+    ]
+
+    return {'messages_guard': messages_guard}

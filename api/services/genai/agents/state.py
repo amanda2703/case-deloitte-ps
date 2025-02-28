@@ -7,6 +7,7 @@ class AgentsState(TypedDict):
     user_message: str
     messages_str: str
     messages: list
+    messages_guard: list
     prompt: str
     intent: str
     must_search: bool

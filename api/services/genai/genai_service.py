@@ -3,6 +3,7 @@ from api.services.genai.complementary.graph_elements import *
 from api.services.genai.agents.evaluating_agent import EvaluatingAgent
 from api.services.genai.agents.intent_agent import IntentAgent
 from api.services.genai.agents.final_agent import FinalAgent
+from api.services.genai.agents.guard_agent import GuardAgent
 from api.services.genai.agents.state import AgentsState
 from api.services.mixins.service_log_mixin import LogServiceMixin
 from langgraph.graph import START, END, StateGraph
@@ -10,6 +11,7 @@ from langgraph.graph import START, END, StateGraph
 class GenAIService(LogServiceMixin):
 
     def __init__(self):
+        self.guard_agent = GuardAgent()
         self.intent_agent = IntentAgent()
         self.evaluating_agent = EvaluatingAgent()
         self.final_agent = FinalAgent()
@@ -45,12 +47,14 @@ class GenAIService(LogServiceMixin):
     
     def build_graph(self):
 
+        guard_agent_subgraph_builder = self.guard_agent.get_agent_subgraph_builder()
         intent_agent_subgraph_builder = self.intent_agent.get_agent_subgraph_builder()
         evaluating_agent_subgraph_builder = self.evaluating_agent.get_agent_subgraph_builder()
         final_agent_subgraph_builder = self.final_agent.get_agent_subgraph_builder()
 
         builder = StateGraph(AgentsState)
 
+        builder.add_node('guard_agent', guard_agent_subgraph_builder.compile())
         builder.add_node('intent_agent', intent_agent_subgraph_builder.compile())
         builder.add_node('evaluating_agent', evaluating_agent_subgraph_builder.compile())
         builder.add_node('final_agent', final_agent_subgraph_builder.compile())
@@ -60,7 +64,8 @@ class GenAIService(LogServiceMixin):
         builder.add_node('search_wiki', search_wiki)
         builder.add_node('format_messages_for_client', format_messages_for_client)
 
-        builder.add_edge(START, 'intent_agent')
+        builder.add_edge(START, 'guard_agent')
+        builder.add_edge('guard_agent', 'intent_agent')
         builder.add_conditional_edges('intent_agent', evaluating_agent_necessary)
         builder.add_edge('define_deviated_answer', 'set_messages')
         builder.add_edge('set_messages', 'format_messages_for_client')
