@@ -1,3 +1,4 @@
+from api.services.genai.communication.communication_utils import get_model, get_trim_messages
 from api.services.genai.agents.state import AgentsState
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
@@ -8,12 +9,12 @@ class Answer(BaseModel):
 
 def llm_response(state: AgentsState):
 
-    model = ChatOpenAI(
-        model = 'gpt-4o', 
-        temperature = 0, 
-        api_key = os.getenv('OPENAI_API_KEY')
-    ) 
+    model_name = 'gpt-4o'
 
-    response = model.with_structured_output(Answer).invoke(state['messages'])
+    model = get_model(model_name)
+
+    messages = get_trim_messages(state['messages'], model_name)
+
+    response = model.with_structured_output(Answer).invoke(messages)
     
     return {'answer': response.answer}

@@ -1,7 +1,9 @@
+from api.services.genai.communication.communication_utils import get_model
 from api.services.genai.agents.state import AgentsState
-from langchain_openai import ChatOpenAI
+from api.services.mixins.service_log_mixin import LogServiceMixin
 from pydantic import BaseModel
-import os
+
+log_service = LogServiceMixin()
 
 class Evaluation(BaseModel):
     must_search: bool
@@ -9,13 +11,11 @@ class Evaluation(BaseModel):
 
 def llm_response(state: AgentsState):
 
-    model = ChatOpenAI(
-        model = 'gpt-4o-mini', 
-        temperature = 0, 
-        api_key = os.getenv('OPENAI_API_KEY')
-    ) 
+    model = get_model(model_name='gpt-4o-mini')
     
     response = model.with_structured_output(Evaluation).invoke(state['messages'])
+
+    log_service.info_log(f'evaluating_agent: {response.must_search} | {response.search_query}')
     
     return {
         'must_search': response.must_search,
