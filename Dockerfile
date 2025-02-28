@@ -16,4 +16,4 @@ COPY . /app
 EXPOSE 8000
 
 # Run the application on port 8000
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8000", "--timeout", "20", "--log-level", "info", "--access-logfile", "-", "--error-logfile", "-", "app:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8000", "--timeout", "120", "--log-level", "info", "--access-logfile", "-", "--error-logfile", "-", "app:app"]
