@@ -126,3 +126,58 @@ Este projeto utiliza variáveis de ambiente para controlar partes importantes do
 - **`USER_MESSAGE_MIN_LENGTH`** e **`USER_MESSAGE_MAX_LENGTH`**  
   Define o tamanho mínimo e máximo para o campo `user_message` enviado pelo usuário. Se o valor sair desse intervalo, a requisição é considerada inválida.  
 
+# Como Executar
+
+Procedimento padrão de criação e execução de containers Docker.
+
+## Exemplo de Uso da Rota `/api/v1/chatbot`
+
+Este documento descreve como fazer uma requisição POST para o endpoint `/api/v1/chatbot` para interagir com o chatbot.
+
+### Requisição
+
+Faça um POST para o endpoint `/api/v1/chatbot` com um corpo JSON seguindo o esquema validado em `PayloadSchema`.
+
+### Exemplo de Corpo JSON
+
+```json
+{
+    "user_message": "Qual é a capital do Egito?",
+    "message_history": [
+        {
+            "role": "user",
+            "content": "Olá"
+        },
+        {
+            "role": "assistant",
+            "content": "Oi! Em que posso ajudar?"
+        }
+    ]
+}
+```
+
+### Exemplo de retorno
+
+```json
+{
+    "answer": "A capital do Egito é o Cairo. É a maior cidade do país e também a mais populosa da África, com cerca de 20 milhões de habitantes na região metropolitana. \n\nSe precisar de mais informações sobre o Cairo, posso ajudar com detalhes sobre suas atrações e história. 😊",
+    "message_history": [
+        {
+            "role": "user",
+            "content": "Olá"
+        },
+        {
+            "role": "assistant",
+            "content": "Oi! Em que posso ajudar?"
+        },
+        {
+            "content": "qual a capital do egito",
+            "role": "user"
+        },
+        {
+            "content": "A capital do Egito é o Cairo. É a maior cidade do país e também a mais populosa da África, com cerca de 20 milhões de habitantes na região metropolitana. \n\nSe precisar de mais informações sobre o Cairo, posso ajudar com detalhes sobre suas atrações e história. 😊",
+            "role": "assistant"
+        }
+    ]
+}
+```
