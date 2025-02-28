@@ -130,7 +130,7 @@ Este projeto utiliza variáveis de ambiente para controlar partes importantes do
 
 Procedimento padrão de criação e execução de containers Docker.
 
-## Exemplo de Uso da Rota `/api/v1/chatbot`
+## Exemplo de Uso da Rota
 
 Este documento descreve como fazer uma requisição POST para o endpoint `/api/v1/chatbot` para interagir com o chatbot.
 
