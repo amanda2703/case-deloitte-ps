@@ -15,9 +15,12 @@ class GenAIService(LogServiceMixin):
         self.final_agent = FinalAgent()
         self.final_graph = None
 
-    def process(self, message_history: list[dict], user_message: str):
+    def process(self, data: dict):
 
         try:
+
+            message_history = data['message_history']
+            user_message = data['user_message']
 
             # Constrói e compila o grafo
             self.build_graph()
