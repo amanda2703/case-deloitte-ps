@@ -18,7 +18,7 @@ Este repositório contém a implementação de um chatbot utilizando múltiplos 
 
 ## Visão Geral
 
-O projeto oferece uma API em Flask que recebe requisições **POST** para conversar com o chatbot. O processo utiliza vários módulos do **LangChain** e bibliotecas associadas para gerenciar diferentes "agentes" que analisam:
+O projeto oferece uma API em Flask que recebe requisições **POST** para conversar com o chatbot. O processo utiliza vários módulos do **LangChain** e **LangGraph** e bibliotecas associadas para gerenciar diferentes "agentes" que analisam:
 
 1. **Intenção** do usuário (para verificar se há menções a Engenharia Civil).
 2. **Necessidade de busca externa** (caso o assunto precise de consulta na internet ou na Wikipédia).
@@ -27,7 +27,7 @@ O projeto oferece uma API em Flask que recebe requisições **POST** para conver
    - Conteúdo encontrado em buscas externas (se aplicável).
    - Histórico de mensagens fornecido.
 
-Há também um agente de _guard_ que avalia a segurança do conteúdo usando um modelo `meta-llama/Llama-Guard-3-1B` (ou similar) para filtrar tópicos sensíveis.
+Há também um agente de _guard_ que avalia a segurança do conteúdo usando um modelo `meta-llama/Llama-Guard-3-1B` para filtrar tópicos sensíveis.
 
 ---
 
@@ -53,7 +53,7 @@ Há também um agente de _guard_ que avalia a segurança do conteúdo usando um 
    - Em outros casos, pode realizar buscas externas, consultar o histórico de mensagens e fornecer a resposta final.
 
 5. **Retorno**  
-   O chatbot retorna um JSON com a mensagem final (`assistant`) e pode incluir o histórico atualizado.
+   O chatbot retorna um JSON com a mensagem final (`answer`) e o histórico atualizado.
 
 ---
 
@@ -70,13 +70,13 @@ Há também um agente de _guard_ que avalia a segurança do conteúdo usando um 
   - `intent_agent_prompt.py`  
   - `evaluating_agent_prompt.py`  
   - `final_agent_prompt.py`  
-  Cada um define o “persona” e o objetivo de um agente específico.
+  Cada um define o persona e o objetivo de um agente específico.
 
 - **`messages_service.py`**  
   Lida com criação, formatação e manipulação de mensagens para diferentes etapas (por exemplo, transformar histórico em string, formatar mensagens para o agente final etc.).
 
 - **`graph_elements.py`**  
-  Reúne funções (nós e arestas) que compõem a lógica condicional complementar, como a checagem de tema e buscas paralelas.
+  Reúne funções (nós e arestas) que compõem a lógica condicional complementar.
 
 - **`llama_guard.py`**  
   Usa o modelo `meta-llama/Llama-Guard-3-1B` para avaliar a segurança e filtrar conteúdo indesejado.
@@ -88,7 +88,7 @@ Há também um agente de _guard_ que avalia a segurança do conteúdo usando um 
     - Cada um invoca o modelo apropriado (`gpt-4o`, `gpt-4o-mini`, etc.) para processar a etapa correspondente (intenção, avaliação de busca ou resposta final).
 
 - **Agentes Principais**  
-  - `evaluating_agent.py`, `final_agent.py`, `guard_agent.py`, `intenet_agenet.py` (Agente de Intenção)  
+  - `evaluating_agent.py`, `final_agent.py`, `guard_agent.py`, `intent_agenet.py` 
     - Contêm a definição de cada agente e sua respectiva máquina de estados (`StateGraph`) via `langgraph`.
   - `state.py`  
     - Define a estrutura do estado (`AgentsState`) que transita pelos agentes.
@@ -107,7 +107,7 @@ Para rodar este projeto, é necessário instalar:
 - **langchain**, **langchain_openai**, **langchain_core**, **langchain_community** (ecossistema LangChain)
 - **tavily_search** e **WikipediaLoader** (para buscas externas)
 
-Exemplo de instalação (supondo que exista um `requirements.txt`):
+Exemplo de instalação:
 
 ```bash
 pip install -r requirements.txt
@@ -125,6 +125,12 @@ Este projeto utiliza variáveis de ambiente para controlar partes importantes do
 
 - **`USER_MESSAGE_MIN_LENGTH`** e **`USER_MESSAGE_MAX_LENGTH`**  
   Define o tamanho mínimo e máximo para o campo `user_message` enviado pelo usuário. Se o valor sair desse intervalo, a requisição é considerada inválida.  
+
+- **`TAVILY_API_KEY`**  
+  Chave de API para utilização dos mecanismos de busca.
+
+- **`HUGGINGFACE_TOKEN`**  
+  Token para acesso ao modelo Llama-Guard-3-8B.
 
 # Como Executar
 
@@ -181,3 +187,7 @@ Faça um POST para o endpoint `/api/v1/chatbot` com um corpo JSON seguindo o esq
     ]
 }
 ```
+
+---
+
+README gerado pelo modelo GPT-o1, com correções pela desenvolvedora.
