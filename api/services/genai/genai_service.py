@@ -1,4 +1,4 @@
-from api.services.genai.messages.messages_service import format_messages_for_client
+from api.services.genai.messages.messages_service import format_messages_for_client, set_messages_final_agent
 from api.services.genai.complementary.graph_elements import *
 from api.services.genai.agents.evaluating_agent import EvaluatingAgent
 from api.services.genai.agents.intent_agent import IntentAgent
@@ -54,6 +54,7 @@ class GenAIService(LogServiceMixin):
         builder.add_node('intent_agent', intent_agent_subgraph_builder.compile())
         builder.add_node('evaluating_agent', evaluating_agent_subgraph_builder.compile())
         builder.add_node('final_agent', final_agent_subgraph_builder.compile())
+        builder.add_node('set_messages', set_messages_final_agent)
         builder.add_node('define_deviated_answer', define_deviated_answer)
         builder.add_node('search_web', search_web)
         builder.add_node('search_wiki', search_wiki)
@@ -61,7 +62,9 @@ class GenAIService(LogServiceMixin):
 
         builder.add_edge(START, 'intent_agent')
         builder.add_conditional_edges('intent_agent', evaluating_agent_necessary)
-        builder.add_edge('define_deviated_answer',END)
+        builder.add_edge('define_deviated_answer', 'set_messages')
+        builder.add_edge('set_messages', 'format_messages_for_client')
+        builder.add_edge('format_messages_for_client', END)
         builder.add_conditional_edges('evaluating_agent', evaluating_search_necessary)
         builder.add_edge('search_web', 'final_agent')
         builder.add_edge('search_wiki', 'final_agent')
